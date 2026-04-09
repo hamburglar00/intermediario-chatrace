@@ -46,7 +46,9 @@ function isLikelyPhone(value: string): boolean {
 
 function buildPromoCode(name: string): string {
   const uuidSegment = generateUUID().replace(/-/g, "").slice(0, 12);
-  return `${name}-${uuidSegment}`;
+  const normalizedName = name.trim().toLowerCase();
+  const namePrefix = normalizedName.slice(0, 3) || "usr";
+  return `${namePrefix}-${uuidSegment}`;
 }
 
 function sleep(ms: number): Promise<void> {
