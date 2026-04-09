@@ -51,6 +51,29 @@ function buildPromoCode(name: string): string {
   return `${namePrefix}-${uuidSegment}`;
 }
 
+function buildWhatsappMessage(promoCode: string): string {
+  const variants = [
+    "Hola! Vi este anuncio, me pasas info?",
+    "Hola! Vi el anuncio, podrias darme mas info?",
+    "Buenas! Me contas un poco mas del anuncio?",
+    "Hola! Quisiera saber mas sobre lo que ofrecen.",
+    "Buenas! Me das mas detalles por favor?",
+    "Hola! Estoy interesado, me contas como funciona?",
+    "Hola! Vi tu publicacion, podrias ampliarme la info?",
+    "Holaaa! Me llamo la atencion el anuncio, me contas mas?",
+    "Hola! Vi tu publicidad, como es para registrarse?",
+    "Buenas! Me das informacion sobre como empezar?",
+  ];
+
+  const base = variants[Math.floor(Math.random() * variants.length)];
+  return promoCode ? `${base} ${promoCode}` : base;
+}
+
+function buildWhatsappLink(phone: string, promoCode: string): string {
+  const message = buildWhatsappMessage(promoCode);
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -61,8 +84,8 @@ type RequestPayload = Record<string, unknown> & {
 };
 
 type NormalizedUserData = {
-  ph?: string;
-  em?: string;
+  phone?: string;
+  email?: string;
 };
 
 async function parseJsonBody(req: NextRequest): Promise<RequestPayload> {
@@ -175,11 +198,11 @@ function detectNormalizedUserData(
   const result: NormalizedUserData = {};
 
   if (foundPhone) {
-    result.ph = foundPhone;
+    result.phone = foundPhone;
   }
 
   if (foundEmail) {
-    result.em = foundEmail;
+    result.email = foundEmail;
   }
 
   return result;
@@ -278,10 +301,12 @@ async function handleRequest(req: NextRequest) {
     const external_id = extractExternalId(req, body);
     const event_id = generateUUID();
     const promo_code = buildPromoCode(name);
+    const whatsapp_link = buildWhatsappLink(telefono_asignado, promo_code);
 
     return NextResponse.json(
       {
         promo_code,
+        whatsapp_link,
         external_id,
         event_id,
         timestamp,
