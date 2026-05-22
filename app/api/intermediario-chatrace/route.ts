@@ -44,11 +44,20 @@ function isLikelyPhone(value: string): boolean {
   return normalized.length >= 8;
 }
 
-function buildPromoCode(name: string): string {
+function sanitizePromoPrefix(raw: unknown): string {
+  return String(raw ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, "")
+    .slice(0, 20);
+}
+
+function buildPromoCode(name: string, customPrefix?: string): string {
   const uuidSegment = generateUUID().replace(/-/g, "").slice(0, 12);
-  const normalizedName = name.trim().toLowerCase();
-  const namePrefix = normalizedName.slice(0, 3) || "usr";
-  return `${namePrefix}-${uuidSegment}`;
+  const normalizedName = sanitizePromoPrefix(name);
+  const safeCustomPrefix = sanitizePromoPrefix(customPrefix);
+  const prefix = safeCustomPrefix || normalizedName.slice(0, 3) || "usr";
+  return `${prefix}-${uuidSegment}`;
 }
 
 function buildWhatsappMessage(promoCode: string): string {
@@ -81,6 +90,8 @@ function sleep(ms: number): Promise<void> {
 type RequestPayload = Record<string, unknown> & {
   name?: unknown;
   external_id?: unknown;
+  prefix?: unknown;
+  prefijo?: unknown;
 };
 
 type NormalizedUserData = {
@@ -119,6 +130,16 @@ function extractExternalId(req: NextRequest, body: RequestPayload): string {
   );
 
   return explicitExternalId || generateUUID();
+}
+
+function extractPromoPrefix(req: NextRequest, body: RequestPayload): string {
+  const { searchParams } = new URL(req.url);
+  return getStringValue(
+    searchParams.get("prefix") ??
+      searchParams.get("prefijo") ??
+      body.prefix ??
+      body.prefijo
+  );
 }
 
 function collectInputCandidates(req: NextRequest, body: RequestPayload): string[] {
@@ -286,7 +307,11 @@ async function handleRequest(req: NextRequest) {
 
     if (!name) {
       return NextResponse.json(
-        { ok: false, error: 'Falta el parametro "name"' },
+        {
+          ok: false,
+          error: 'Falta el parametro "name"',
+          log: "entry.validation_error: falta el parametro requerido name",
+        },
         { status: 400 }
       );
     }
@@ -300,11 +325,14 @@ async function handleRequest(req: NextRequest) {
 
     const external_id = extractExternalId(req, body);
     const event_id = generateUUID();
-    const promo_code = buildPromoCode(name);
+    const promoPrefix = extractPromoPrefix(req, body);
+    const promo_code = buildPromoCode(name, promoPrefix);
     const whatsapp_link = buildWhatsappLink(telefono_asignado, promo_code);
 
     return NextResponse.json(
       {
+        ok: true,
+        log: "ok: entry_received -> constructor_request_ok -> response_mapped",
         promo_code,
         whatsapp_link,
         external_id,
@@ -330,6 +358,7 @@ async function handleRequest(req: NextRequest) {
       {
         ok: false,
         error: message,
+        log: `constructor.request_error: ${message}`,
       },
       { status: 503 }
     );
