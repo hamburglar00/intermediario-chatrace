@@ -47,7 +47,7 @@ flowchart TD
 Recibe datos por query string.
 
 ```bash
-curl "http://localhost:3000/api/intermediario-chatrace?name=Leo&email=leo@example.com&phone=1122334455"
+curl "https://intermediario-chatrace.vercel.app/api/intermediario-chatrace?name=Geraldina&email=geraldina@example.com&phone=1122334455"
 ```
 
 ### `POST /api/intermediario-chatrace`
@@ -55,9 +55,9 @@ curl "http://localhost:3000/api/intermediario-chatrace?name=Leo&email=leo@exampl
 Recibe datos por JSON body. El body solo se parsea si el header incluye `Content-Type: application/json`.
 
 ```bash
-curl -X POST "http://localhost:3000/api/intermediario-chatrace" \
+curl -X POST "https://intermediario-chatrace.vercel.app/api/intermediario-chatrace" \
   -H "Content-Type: application/json" \
-  -d "{\"name\":\"Leo\",\"email\":\"leo@example.com\",\"phone\":\"1122334455\"}"
+  -d "{\"name\":\"Geraldina\",\"email\":\"geraldina@example.com\",\"phone\":\"1122334455\"}"
 ```
 
 ## Input
@@ -85,7 +85,7 @@ Ademas de los nombres exactos de parametros, el endpoint recorre los valores rec
 | Email | Cualquier string que cumpla el patron basico `usuario@dominio.ext`. |
 | Telefono | Cualquier string/numero que, al quitar caracteres no numericos, quede con al menos 8 digitos. |
 
-Ejemplo: aunque llegue un campo no previsto como `respuesta_1=leo@example.com`, puede terminar saliendo como `email` si pasa la validacion.
+Ejemplo: aunque llegue un campo no previsto como `respuesta_1=geraldina@example.com`, puede terminar saliendo como `email` si pasa la validacion.
 
 ### Normalizacion de telefono
 
@@ -100,9 +100,9 @@ Ejemplo: aunque llegue un campo no previsto como `respuesta_1=leo@example.com`, 
 
 | Entrada | Salida |
 | --- | --- |
-| `LEO@EXAMPLE.COM` | `leo@example.com` |
-| ` leo@example.com ` | `leo@example.com` |
-| `leo@example` | No se devuelve como `email`, porque no pasa la validacion basica. |
+| `GERALDINA@EXAMPLE.COM` | `geraldina@example.com` |
+| ` geraldina@example.com ` | `geraldina@example.com` |
+| `geraldina@example` | No se devuelve como `email`, porque no pasa la validacion basica. |
 
 ## Output
 
@@ -114,7 +114,7 @@ Ejemplo:
 {
   "ok": true,
   "log": "ok: entry_received -> constructor_request_ok -> response_mapped",
-  "promo_code": "leo-a1b2c3d4e5f6",
+  "promo_code": "ger-a1b2c3d4e5f6",
   "whatsapp_link": "https://wa.me/5491122334455?text=Hola%21%20Vi%20este%20anuncio...",
   "external_id": "0d8f6a7b-5e3b-4ef9-9c9a-4b38e53c95c1",
   "event_id": "b2f5d9d6-087e-41c6-94e1-6184188b61a5",
@@ -122,7 +122,7 @@ Ejemplo:
   "event_time": 1775764320,
   "telefono_asignado": "5491122334455",
   "phone": "541122334455",
-  "email": "leo@example.com"
+  "email": "geraldina@example.com"
 }
 ```
 
@@ -184,7 +184,7 @@ Reglas:
 Ejemplos:
 
 ```txt
-name=Leo              -> leo-a1b2c3d4e5f6
+name=Geraldina        -> ger-a1b2c3d4e5f6
 name=Juan             -> jua-a1b2c3d4e5f6
 name=Juan&prefix=ads  -> ads-a1b2c3d4e5f6
 ```
@@ -207,7 +207,7 @@ El `promo_code` siempre se agrega al final del mensaje si existe.
 Ejemplo:
 
 ```txt
-Hola! Vi este anuncio, me pasas info? leo-a1b2c3d4e5f6
+Hola! Vi este anuncio, me pasas info? ger-a1b2c3d4e5f6
 ```
 
 El link final se genera con este formato:
@@ -297,13 +297,13 @@ npm run dev
 Probar la home:
 
 ```txt
-http://localhost:3000
+https://intermediario-chatrace.vercel.app
 ```
 
 Probar el endpoint:
 
 ```txt
-http://localhost:3000/api/intermediario-chatrace?name=Leo
+https://intermediario-chatrace.vercel.app/api/intermediario-chatrace?name=Geraldina
 ```
 
 ## Scripts
