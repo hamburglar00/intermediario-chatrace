@@ -72,7 +72,7 @@ Cuando un dato existe en query string y body, en general tiene prioridad el valo
 | --- | --- | --- | --- | --- |
 | `name` | - | Si | String no vacio | Se envia a Supabase para pedir el telefono asignado. Tambien se usa para generar el prefijo del `promo_code` si no llega `prefix`/`prefijo`. |
 | `external_id` | - | No | Cualquier string | Si llega, se devuelve trimmeado tal como vino. Si no llega, se genera un UUID v4 automaticamente. |
-| `prefix` | `prefijo` | No | Letras, numeros, `_` o `-` | Prefijo custom para el `promo_code`. Se sanitiza a minusculas, se eliminan caracteres invalidos y se corta a 20 caracteres. |
+| `prefix` | `prefijo` | No | Letras, numeros, `_` o `-` | Prefijo custom para el `promo_code`. Respeta mayusculas/minusculas, elimina caracteres invalidos y se corta a 20 caracteres. |
 | `email` | `em` | No | Email probable | Se normaliza a minusculas. Se devuelve solo si parece email valido. |
 | `phone` | `telefono`, `ph` | No | Digitos o texto con digitos | Se normaliza dejando solo digitos. Si tiene 10 digitos, se antepone `54`. Se devuelve solo si queda con al menos 8 digitos. |
 
@@ -176,7 +176,7 @@ Formato:
 
 Reglas:
 
-1. Si llega `prefix` o `prefijo`, se usa ese valor sanitizado.
+1. Si llega `prefix` o `prefijo`, se usa ese valor sanitizado respetando mayusculas/minusculas.
 2. Si no llega prefijo custom, se usan las primeras 3 letras del `name` sanitizado.
 3. Si no hay ningun valor usable, se usa `usr`.
 4. El segmento final son los primeros 12 caracteres hexadecimales de un UUID sin guiones.
@@ -186,15 +186,15 @@ Ejemplos:
 ```txt
 name=Geraldina        -> ger-a1b2c3d4e5f6
 name=Juan             -> jua-a1b2c3d4e5f6
-name=Juan&prefix=ads  -> ads-a1b2c3d4e5f6
+name=Juan&prefix=CH1  -> CH1-a1b2c3d4e5f6
 ```
 
 El prefijo se sanitiza asi:
 
 | Entrada | Prefijo resultante |
 | --- | --- |
-| `Ads-01` | `ads-01` |
-| ` Promo 2026! ` | `promo2026` |
+| `Ads-01` | `Ads-01` |
+| ` Promo 2026! ` | `Promo2026` |
 | `abc_def` | `abc_def` |
 | `prefijo-muy-largo-1234567890` | `prefijo-muy-largo-12` |
 

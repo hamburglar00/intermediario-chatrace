@@ -47,8 +47,7 @@ function isLikelyPhone(value: string): boolean {
 function sanitizePromoPrefix(raw: unknown): string {
   return String(raw ?? "")
     .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]/g, "")
+    .replace(/[^a-zA-Z0-9_-]/g, "")
     .slice(0, 20);
 }
 
