@@ -310,7 +310,7 @@ async function handleRequest(req: NextRequest) {
         {
           ok: false,
           error: 'Falta el parametro "name"',
-          log: "entry.validation_error: falta el parametro requerido name",
+          log: 'Falta enviar el nombre en el parametro "name".',
         },
         { status: 400 }
       );
@@ -332,7 +332,7 @@ async function handleRequest(req: NextRequest) {
     return NextResponse.json(
       {
         ok: true,
-        log: "ok: entry_received -> constructor_request_ok -> response_mapped",
+        log: "Solicitud procesada correctamente. Se genero el link de WhatsApp.",
         promo_code,
         whatsapp_link,
         external_id,
@@ -358,7 +358,7 @@ async function handleRequest(req: NextRequest) {
       {
         ok: false,
         error: message,
-        log: `constructor.request_error: ${message}`,
+        log: `No se pudo generar el link de WhatsApp. Detalle: ${message}`,
       },
       { status: 503 }
     );

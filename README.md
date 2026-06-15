@@ -113,7 +113,7 @@ Ejemplo:
 ```json
 {
   "ok": true,
-  "log": "ok: entry_received -> constructor_request_ok -> response_mapped",
+  "log": "Solicitud procesada correctamente. Se genero el link de WhatsApp.",
   "promo_code": "ger-a1b2c3d4e5f6",
   "whatsapp_link": "https://wa.me/5491122334455?text=Hola%21%20Vi%20este%20anuncio...",
   "external_id": "0d8f6a7b-5e3b-4ef9-9c9a-4b38e53c95c1",
@@ -131,7 +131,7 @@ Ejemplo:
 | Campo | Tipo | Siempre viene | Formato / valores | Descripcion |
 | --- | --- | --- | --- | --- |
 | `ok` | Boolean | Si | `true` | Indica que la solicitud fue procesada correctamente. |
-| `log` | String | Si | `ok: entry_received -> constructor_request_ok -> response_mapped` | Log funcional de exito. |
+| `log` | String | Si | Mensaje legible en espanol | Resumen humano de lo que paso con la solicitud. |
 | `promo_code` | String | Si | `{prefijo}-{12_hex}` | Codigo promocional unico generado para la conversacion. |
 | `whatsapp_link` | String | Si | `https://wa.me/{telefono}?text={mensaje}` | Link final de WhatsApp con mensaje codificado. |
 | `external_id` | String | Si | UUID v4 si no vino en input. Si vino, se devuelve tal cual trimmeado. | Identificador externo de la persona/evento. |
@@ -154,16 +154,16 @@ El campo `log` puede tomar estos valores/formas:
 
 | Caso | HTTP | `ok` | `log` |
 | --- | --- | --- | --- |
-| Exito | `200` | `true` | `ok: entry_received -> constructor_request_ok -> response_mapped` |
-| Falta `name` | `400` | `false` | `entry.validation_error: falta el parametro requerido name` |
-| Error procesando o consultando telefono | `503` | `false` | `constructor.request_error: {mensaje}` |
+| Exito | `200` | `true` | `Solicitud procesada correctamente. Se genero el link de WhatsApp.` |
+| Falta `name` | `400` | `false` | `Falta enviar el nombre en el parametro "name".` |
+| Error procesando o consultando telefono | `503` | `false` | `No se pudo generar el link de WhatsApp. Detalle: {mensaje}` |
 
-Ejemplos posibles de `constructor.request_error`:
+Ejemplos posibles de error:
 
 ```txt
-constructor.request_error: No fue posible obtener telefono luego de reintentos: Timeout consultando landing-phone (6000ms)
-constructor.request_error: No fue posible obtener telefono luego de reintentos: landing-phone respondio 500
-constructor.request_error: No fue posible obtener telefono luego de reintentos: No se pudo obtener un telefono valido
+No se pudo generar el link de WhatsApp. Detalle: No fue posible obtener telefono luego de reintentos: Timeout consultando landing-phone (6000ms)
+No se pudo generar el link de WhatsApp. Detalle: No fue posible obtener telefono luego de reintentos: landing-phone respondio 500
+No se pudo generar el link de WhatsApp. Detalle: No fue posible obtener telefono luego de reintentos: No se pudo obtener un telefono valido
 ```
 
 ## Promo Code
@@ -226,7 +226,7 @@ Respuesta `400`:
 {
   "ok": false,
   "error": "Falta el parametro \"name\"",
-  "log": "entry.validation_error: falta el parametro requerido name"
+  "log": "Falta enviar el nombre en el parametro \"name\"."
 }
 ```
 
@@ -238,7 +238,7 @@ Respuesta `503`:
 {
   "ok": false,
   "error": "No fue posible obtener telefono luego de reintentos: ...",
-  "log": "constructor.request_error: ..."
+  "log": "No se pudo generar el link de WhatsApp. Detalle: ..."
 }
 ```
 
